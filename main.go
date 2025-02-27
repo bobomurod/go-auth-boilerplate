@@ -7,7 +7,7 @@ import (
 	"time"
 )
 
-func main() {
+func setupRouter() *chi.Mux {
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.RealIP)
@@ -21,4 +21,13 @@ func main() {
 			return
 		}
 	})
+	return r
+}
+
+func main() {
+	r := setupRouter()
+	err := http.ListenAndServe(":3111", r)
+	if err != nil {
+		return
+	}
 }
