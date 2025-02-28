@@ -3,7 +3,9 @@ package main
 import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
+	"log/slog"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -25,9 +27,13 @@ func setupRouter() *chi.Mux {
 }
 
 func main() {
+	logger := slog.New(slog.NewJSONHandler(os.Stdout, &slog.HandlerOptions{Level: slog.LevelDebug, AddSource: true}))
+	slog.SetDefault(logger)
 	r := setupRouter()
+	logger.Info("Starting server")
 	err := http.ListenAndServe(":3111", r)
 	if err != nil {
+		logger.Error("Error starting server", err)
 		return
 	}
 }
