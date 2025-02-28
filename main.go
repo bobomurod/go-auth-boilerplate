@@ -18,7 +18,7 @@ func setupRouter() *chi.Mux {
 	r.Use(middleware.URLFormat)
 	r.Use(middleware.Timeout(60 * time.Second))
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		_, err := w.Write([]byte("Hello World"))
+		_, err := w.Write([]byte("Hello, World!"))
 		if err != nil {
 			return
 		}
@@ -33,7 +33,7 @@ func main() {
 	logger.Info("Starting server")
 	err := http.ListenAndServe(":3111", r)
 	if err != nil {
-		logger.Error("Error starting server", err)
+		logger.Error("Error starting server", "error", err)
 		return
 	}
 }

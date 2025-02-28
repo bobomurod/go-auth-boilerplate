@@ -8,7 +8,7 @@ import (
 	"testing"
 )
 
-func testHomeHandler(t *testing.T) {
+func TestHomeHandler(t *testing.T) {
 	r := setupRouter()
 	req, err := http.NewRequest("GET", "/", nil)
 	if err != nil {
@@ -30,7 +30,7 @@ func testHomeHandler(t *testing.T) {
 	}
 }
 
-func testNonExistingRoute(t *testing.T) {
+func TestNonExistingRoute(t *testing.T) {
 	r := setupRouter()
 	req, err := http.NewRequest("GET", "/non-existing-route", nil)
 	if err != nil {
