@@ -1,4 +1,4 @@
-module github.com/bobomurod/goath
+module github.com/bobomurod/go-auth-bolilerplate
 
 go 1.23.4
 
