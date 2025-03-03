@@ -7,6 +7,7 @@ import (
 
 type Config struct {
 	MongoDB MongoDBConfig
+	HTTP    HTTPConfig
 }
 
 type MongoDBConfig struct {
