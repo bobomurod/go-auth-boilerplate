@@ -1,4 +1,4 @@
-package mongodb
+package repository
 
 import (
 	"github.com/bobomurod/go-auth-bolilerplate/internal/core/ports"

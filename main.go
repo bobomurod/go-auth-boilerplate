@@ -1,10 +1,16 @@
 package main
 
 import (
+	"context"
 	"github.com/bobomurod/go-auth-bolilerplate/internal/adapters/baseLogger"
+	repository "github.com/bobomurod/go-auth-bolilerplate/internal/adapters/repository/mongodb"
+	"github.com/bobomurod/go-auth-bolilerplate/internal/config"
+	"github.com/bobomurod/go-auth-bolilerplate/internal/core/services"
+	"github.com/bobomurod/go-auth-bolilerplate/internal/framework/mongodb"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"net/http"
+	"os"
 	"time"
 )
 
@@ -26,12 +32,27 @@ func setupRouter() *chi.Mux {
 }
 
 func main() {
-	baseLogger := baseLogger.NewSlogLogger()
-	r := setupRouter()
-	baseLogger.Info("Starting server")
-	err := http.ListenAndServe(":3111", r)
+	log := baseLogger.SlogLogger{}
+	cfg := config.NewConfig()
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	mongoClient, err := mongodb.NewMongoClient(ctx, mongodb.MongoConfig{
+		URI:            cfg.MongoDB.URI,
+		Database:       cfg.MongoDB.Database,
+		ConnectTimeout: cfg.MongoDB.ConnectTimeout,
+	})
 	if err != nil {
-		baseLogger.Error("Error starting server", "error", err)
+		log.Error("Error connecting to mongodb", "error", err)
+		os.Exit(1)
+	}
+	r := setupRouter()
+	err = http.ListenAndServe(":3111", r)
+	if err != nil {
+		log.Error("Error starting server", "error", err)
 		return
 	}
+	defer mongoClient.Close(ctx)
+	userRepo := repository.NewUserRepository(mongoClient.Client())
+	userService := services.NewUserService(userRepo, &log)
+	log.Info("Starting server successfully")
 }
